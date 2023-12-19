@@ -46,14 +46,12 @@ CREATE SCHEMA retail
         product_price NUMERIC(9,2) NOT NULL
     )
     CREATE VIEW v_gmv AS (
-        SELECT (
-            store_id,
-            category_id,
-            SUM(product_count*product_price) sales_sum
+        SELECT (purchases.store_id, products.category_id,
+            SUM(purchases.product_count*purchases.product_price) as sales_sum
         )
         FROM purchase_items 
-        JOIN products USING(purchase_id)
-        JOIN purchases USING(product_id)
-        GROUP BY store_id, category_id
+        JOIN products on products.product_id = purchase_items.product_id
+        JOIN purchases on purchases.purchase_id = purchase_items.purchase_id
+        GROUP BY purchases.store_id, products.category_id
     )
     
